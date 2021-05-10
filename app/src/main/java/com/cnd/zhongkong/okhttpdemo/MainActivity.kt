@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity() {
     private val TAG="MainActivity_tag"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
         val binding= ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.wbShow.settings.javaScriptEnabled=true
