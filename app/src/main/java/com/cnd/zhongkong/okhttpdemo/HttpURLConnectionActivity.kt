@@ -52,7 +52,7 @@ class HttpURLConnectionActivity : AppCompatActivity() {
             }//end try
         }// end thread
     }//end sendRequestWithHttpURLConnection
-    private fun showResponse(response:String){  //异步消息处理
+    public fun showResponse(response:String){  //异步消息处理
         runOnUiThread {
             val binding =ActivityHttpURLConnectionBinding.inflate(layoutInflater)   //必须要载入layoutInflater，不能全局，暂时没有其他解决办法
             setContentView(binding.root)
