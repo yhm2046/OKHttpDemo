@@ -11,8 +11,8 @@ import com.cnd.zhongkong.okhttpdemo.databinding.ActivityMainBinding
  */
 
 class MainActivity : AppCompatActivity() {
-private val strURL="https://www.google.com/ncr"
-    private val TAG="AppCompatActivity_tag"
+    private val strURL="https://www.google.com/ncr"
+    private val TAG="MainActivity_tag"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_main)
