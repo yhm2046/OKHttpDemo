@@ -1,6 +1,8 @@
 package com.cnd.zhongkong.okhttpdemo
 
 import android.util.Log
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
@@ -15,6 +17,13 @@ import kotlin.concurrent.thread
 object HttpUtil {
     private val TAG="HttpUtil_wp"
     private val PORT=8000
+//    OKhttp请求方法，比普通http请求方法简单
+    fun sendOkHttpRequest(address: String,callback:okhttp3.Callback){
+        val client=OkHttpClient()
+        val request=Request.Builder().url(address).build()
+        client.newCall(request).equals(callback)    //内部已经开好子线程，在子线程中执行HTTP请求，结果返回callback
+    }
+//    普通http请求方法
     fun sendHttpRequst(address:String, listener:HttpCallbackListener){
         thread {
             var connection:HttpURLConnection?=null
