@@ -6,10 +6,13 @@ import android.util.Log
 import com.cnd.zhongkong.okhttpdemo.databinding.ActivityMainBinding
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.xml.sax.InputSource
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
 import java.lang.Exception
+import java.net.ContentHandler
+import javax.xml.parsers.SAXParserFactory
 import kotlin.concurrent.thread
 
 /**
@@ -30,24 +33,32 @@ class XMLActivity : AppCompatActivity() {
     //发送请求方法
     private fun sendRequestWithOkHttp(){
         thread { try {
+//            unSafeOkHttpClient
             val client=OkHttpClient()
+//            val client=unSafeOkHttpClient()
             val request= Request.Builder().url(strUrl2).build() //使用127.0.0.1会报错：java.net.ConnectException: Failed to connect to /127.0.0.1:80
+            /*
+            * 使用https报错：Trust anchor for certification path not found
+            * */
             val response=client.newCall(request).execute()
-            val responseData=response.body?.string()
-            if (responseData!=null)parseXMLWithPull(responseData)
+            val responseData=response.body?.string()    //服务器返回的数据
+            if (responseData!=null){
+                parseXMLWithSAX(responseData)    //sax解析
+//                parseXMLWithPull(responseData) //pull解析
+            }
         }catch (e:Exception){
             e.printStackTrace()
             Log.i(TAG,"err-->${e.toString()}")
         } }
     }
 
-    //xml解析方法
+    //pull解析方法
     private fun parseXMLWithPull(xmlData :String){
         try {
             val factory=XmlPullParserFactory.newInstance()
             val xmlPullParser=factory.newPullParser()
             xmlPullParser.setInput(StringReader(xmlData))
-            var eventType=xmlPullParser.eventType
+            var eventType=xmlPullParser.eventType   //获取解析事件
             var id=NULL
             var name=NULL
             var version=NULL
@@ -76,4 +87,22 @@ class XMLActivity : AppCompatActivity() {
             Log.i(TAG,"err-->${e.toString()}")
         }
     }
+
+    //sax解析方法
+    private fun parseXMLWithSAX(xmlData: String){
+        try {
+            val factory = SAXParserFactory.newInstance()
+            val xmlReader = factory.newSAXParser().getXMLReader()
+            val handler = MyHandler()
+            // 将ContentHandler的实例设置到XMLReader中
+            xmlReader.contentHandler = handler
+            // 开始执行解析
+            xmlReader.parse(InputSource(StringReader(xmlData)))
+        }catch (e:Exception){
+            e.printStackTrace()
+            Log.i(TAG,"err:${e.toString()}")
+        }
+    }
+
+
 }
