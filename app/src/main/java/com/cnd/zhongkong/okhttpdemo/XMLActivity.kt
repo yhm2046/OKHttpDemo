@@ -6,6 +6,7 @@ import android.util.Log
 import com.cnd.zhongkong.okhttpdemo.databinding.ActivityMainBinding
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONArray
 import org.xml.sax.InputSource
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -21,6 +22,7 @@ import kotlin.concurrent.thread
 class XMLActivity : AppCompatActivity() {
     private val strUrl="http://127.0.0.1/get_data.xml"  //本机地址
     private val strUrl2="http://192.168.1.187/get_data.xml"
+    private val strUrl3="http://192.168.1.187/get_data.json"
     private val NULL=""
     private val TAG="XMLActivity_wp"
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,14 +38,15 @@ class XMLActivity : AppCompatActivity() {
 //            unSafeOkHttpClient
             val client=OkHttpClient()
 //            val client=unSafeOkHttpClient()
-            val request= Request.Builder().url(strUrl2).build() //使用127.0.0.1会报错：java.net.ConnectException: Failed to connect to /127.0.0.1:80
+            val request= Request.Builder().url(strUrl3).build() //使用127.0.0.1会报错：java.net.ConnectException: Failed to connect to /127.0.0.1:80
             /*
             * 使用https报错：Trust anchor for certification path not found
             * */
             val response=client.newCall(request).execute()
             val responseData=response.body?.string()    //服务器返回的数据
             if (responseData!=null){
-                parseXMLWithSAX(responseData)    //sax解析
+                parseJSONWithJSONObject(responseData)
+//                parseXMLWithSAX(responseData)    //sax解析
 //                parseXMLWithPull(responseData) //pull解析
             }
         }catch (e:Exception){
@@ -104,5 +107,22 @@ class XMLActivity : AppCompatActivity() {
         }
     }
 
-
+    //json解析方法
+    private fun parseJSONWithJSONObject(jsonData:String){
+        try {
+            val jsonArray=JSONArray(jsonData)
+            for (i in 0 until jsonArray.length()){
+                val jsonObject=jsonArray.getJSONObject(i)
+                val id=jsonObject.getString("id")
+                val name=jsonObject.getString("name")
+                val version=jsonObject.getString("version")
+                Log.i(TAG,"id------->$id")
+                Log.i(TAG,"name------->$name")
+                Log.i(TAG,"version------->$version")
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+            Log.i(TAG,"parseJSONWithJSONObject err-->${e.toString()}")
+        }
+    }
 }
