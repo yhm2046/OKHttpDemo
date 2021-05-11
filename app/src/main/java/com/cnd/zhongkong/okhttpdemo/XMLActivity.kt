@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.cnd.zhongkong.okhttpdemo.databinding.ActivityMainBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
@@ -45,7 +47,8 @@ class XMLActivity : AppCompatActivity() {
             val response=client.newCall(request).execute()
             val responseData=response.body?.string()    //服务器返回的数据
             if (responseData!=null){
-                parseJSONWithJSONObject(responseData)
+                parseJSONWithGSON(responseData)
+//                parseJSONWithJSONObject(responseData) //json解析
 //                parseXMLWithSAX(responseData)    //sax解析
 //                parseXMLWithPull(responseData) //pull解析
             }
@@ -53,6 +56,18 @@ class XMLActivity : AppCompatActivity() {
             e.printStackTrace()
             Log.i(TAG,"err-->${e.toString()}")
         } }
+    }
+
+//    gson解析方法
+    private fun parseJSONWithGSON(jsonData: String){
+        val gson= Gson()
+        val typeOf=object: TypeToken<List<MyApp>>(){}.type
+        val appList=gson.fromJson<List<MyApp>>(jsonData,typeOf)
+        for (app in appList){
+            Log.i(TAG,"id-->${app.id}")
+            Log.i(TAG,"name-->${app.name}")
+            Log.i(TAG,"version-->${app.version}")
+        }
     }
 
     //pull解析方法
