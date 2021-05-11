@@ -24,7 +24,35 @@ class HttpURLConnectionActivity : AppCompatActivity() {
         val binding =ActivityHttpURLConnectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.btnShow.setOnClickListener {
-            sendRequestWithHttpURLConnection()
+//            sendRequestWithHttpURLConnection()    //单独一个http请求
+//            使用通用方法发起http请求
+            val response=HttpUtil.sendHttpRequst(strURL,object:HttpCallbackListener{
+                override fun onFinish(responese: String) {
+                    var connection:HttpURLConnection?=null
+                    try {
+                        val response=StringBuilder()
+                        val url = URL(strURL)
+                        connection=url.openConnection() as HttpURLConnection
+                        connection.connectTimeout=PORT80
+                        connection.readTimeout=PORT80
+                        val input=connection.inputStream
+                        val reader=BufferedReader(InputStreamReader(input)) //读取获取的输入流
+                        reader.use {
+                            reader.forEachLine { response.append(it) }
+                        }
+                        showResponse(response.toString())
+                    }catch (e:Exception ){
+                        e.printStackTrace()
+                        Log.i(TAG,"HttpCallbackListener.onFinish:${e.toString()}")
+                    }finally {
+                        connection?.disconnect()
+                    }//end try
+                }
+
+                override fun onError(e: java.lang.Exception) {
+                    Log.i(TAG,"HttpCallbackListener.onError:${e.toString()}")
+                }
+            })
             Log.i(TAG,"click...")
         }
     }//end onCreate

@@ -47,7 +47,7 @@ class XMLActivity : AppCompatActivity() {
             val response=client.newCall(request).execute()
             val responseData=response.body?.string()    //服务器返回的数据
             if (responseData!=null){
-                parseJSONWithGSON(responseData)
+                parseJSONWithGSON(responseData) //gson解析
 //                parseJSONWithJSONObject(responseData) //json解析
 //                parseXMLWithSAX(responseData)    //sax解析
 //                parseXMLWithPull(responseData) //pull解析
