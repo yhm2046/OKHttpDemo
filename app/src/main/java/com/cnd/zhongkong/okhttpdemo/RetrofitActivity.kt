@@ -26,10 +26,10 @@ class RetrofitActivity : AppCompatActivity() {
         blinding.btnShow.setOnClickListener {
             Log.i(TAG,"click..")
             Log.i(TAG,"strURL2----->$strURL2")
-            val retrofit= Retrofit.Builder().baseUrl(strURL2).addConverterFactory(
+            val retrofit= Retrofit.Builder().baseUrl(strURL2).addConverterFactory(  //baseUrl()请求路径，addConverterFactory()转换库
                 GsonConverterFactory.create()).build()
-            val appService=retrofit.create(AppService::class.java)
-            appService.getAppData().enqueue(object :Callback<List<MyApp>>{
+            val appService=retrofit.create(AppService::class.java)  //动态大力
+            appService.getAppData().enqueue(object :Callback<List<MyApp>>{  //回调
                 override fun onResponse(call: Call<List<MyApp>>, response: Response<List<MyApp>>) {
                     val list=response.body()
                     if (list!=null){

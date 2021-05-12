@@ -22,7 +22,19 @@ class OKHttpActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnShow.setOnClickListener {
             Log.i(TAG,"click btn============")
-            val response=HttpUtil.sendOkHttpRequest(strURL2,object:Callback{
+//            postRequest()
+            /**************http通用用法***************/
+            HttpUtil.sendHttpRequst("http://www.baidu.com",object :HttpCallbackListener{
+                override fun onFinish(responese: String) {
+                    Log.i(TAG,"aaaaaaaaaaaaaaaaaaaaaaaaaa")
+                }
+
+                override fun onError(e: Exception) {
+                    Log.i(TAG,"bbbbbbbbbbbbbbbbbbbbbbbbbbb")
+                }
+            })
+            /*****************************/
+            HttpUtil.sendOkHttpRequest("http://www.baidu.com",object:Callback{
                 override fun onFailure(call: Call, e: IOException) {
                     Log.i(TAG,"11111111111111111111111")
                     e.printStackTrace()
@@ -47,14 +59,34 @@ class OKHttpActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * okhttp网络库用法1
+     */
+    private fun postRequest(){
+        thread {
+            try {
+                Log.i(TAG,"postRequest...")
+                val clinet=OkHttpClient()
+                val requestBody=FormBody.Builder().add("username","admin").add("password","123").build()    //存放参数
+                val request=Request.Builder().url("http://www.baidu.com").post(requestBody).build()
+                val response=clinet.newCall(request).execute()
+                if (response!=null)Log.i(TAG,"response---------->${response.toString()}")
+                else
+                    Log.i(TAG,"response---------->null")
+            }catch (e:Exception){
+                e.printStackTrace()
+                Log.i(TAG,"err:${e.toString()}")
+            }
+        }
+    }
+
     private fun sendRequestWithOKHttp(){
         thread {    //子线程发出请求
             try {
-
-                val client=OkHttpClient()
-                val request=Request.Builder().url(strURL).build()   //http request
-                val response=client.newCall(request).execute()  //send request and get response
-                val responseData=response.body?.string()    //get value
+                val client=OkHttpClient()   //创建实例
+                val request=Request.Builder().url(strURL).build()   //创建request对象
+                val response=client.newCall(request).execute()  //返回数据
+                val responseData=response.body?.string()    //返回的具体内容
                 if (response!=null){showResponse(responseData)}
             }catch (e:Exception){
                 e.printStackTrace()
